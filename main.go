@@ -3,9 +3,12 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"database/sql"
 	"github.com/oyekunle-mark/animal-kingdom/bird"
+	"github.com/oyekunle-mark/animal-kingdom/store"
 
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
 )
 
 func newRouter() *mux.Router {
@@ -23,8 +26,26 @@ func newRouter() *mux.Router {
 }
 
 func main() {
+	fmt.Println("Starting server...")
+
+	connString := "dbname=template1 sslmode=disable"
+	db, err := sql.Open("postgres", connString)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.Ping()
+
+	if err != nil {
+		panic(err)
+	}
+
+	store.InitStore(store.DbStore{db: db})
+
 	r := newRouter()
 
+	fmt.Println("Serving on port 3000")
 	http.ListenAndServe(":3000", r)
 }
 
