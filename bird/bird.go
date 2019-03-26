@@ -4,17 +4,15 @@ import (
 	"fmt"
 	"net/http"
 	"encoding/json"
+	"github.com/oyekunle-mark/animal-kingdom/store"
 )
 
-type birdStruct struct {
-	Species     string `json:"species"`
-	Description string `json:"description"`
-}
-
-var Birds []birdStruct
+var sqlStore store.Store
 
 func GetBirdHandler(w http.ResponseWriter, r *http.Request) {
-	birdListBytes, err := json.Marshal(Birds)
+	birds, err := sqlStore.GetBirds()
+
+	birdListBytes, err := json.Marshal(birds)
 
 	if err != nil {
 		fmt.Println(fmt.Errorf("Error: %v", err))
@@ -26,7 +24,7 @@ func GetBirdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateBirdHandler(w http.ResponseWriter, r *http.Request) {
-	bird := birdStruct{}
+	bird := store.Bird{}
 
 	err := r.ParseForm()
 
@@ -39,7 +37,10 @@ func CreateBirdHandler(w http.ResponseWriter, r *http.Request) {
 	bird.Species = r.Form.Get("species")
 	bird.Description = r.Form.Get("description")
 
-	Birds = append(Birds, bird)
+	err = sqlStore.CreateBird(&bird)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	http.Redirect(w, r, "/assets/", http.StatusFound)
 }
