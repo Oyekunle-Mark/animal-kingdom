@@ -2,7 +2,7 @@
 
 A golang web application that creates and reads a list of bird species.
 
-Writes data to a postgres sql database
+Writes data to a postgres sql database.
 
 This program uses a number of dependencies. It uses the gorilla mux library for routing and a third party 
 package for postgre sql.
